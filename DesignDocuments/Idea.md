@@ -32,3 +32,9 @@ To cap off day 1 of development, I think it makes sense for this to effectively 
 
 So, the plan going forward: On each level, generate a number of shapes which will try to go home when you release them. Set up If/Else Signs at intersections to funnel them and get them home.
 
+# Update #4:
+
+The map is effectively a binary tree. It might make sense to balance it in the future, but that would require more positioning math. But now each node knows which children it has, so a token can move along the paths.
+
+Next step, generate the correct homes based on the types of tokens (Finish the types of tokens!), and then we'll make sure they move as they're supposed to.
+

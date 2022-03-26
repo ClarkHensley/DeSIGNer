@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- Position the Canvas correctly -->
-    <!-- <canvas style="text-align: center; border: 0px; margin: 0; padding: 0;"></canvas> -->
     <!-- Hosted Version of the p5.js library -->
     <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
     <!-- Global Constants across the files -->
     <script type="text/javascript">
 
-        const windowWidth = 1900;
-        const windowHeight = 1060;
+        const windowWidth = document.documentElement.clientWidth;
+        const windowHeight = document.documentElement.clientHeight;
 
         const shapeRadius = 20;
         const shapeBorderWeight = 5;
@@ -19,10 +17,13 @@
         const shapes = ["triangle", "square"];
         const homeTokens = ["color", "border", "shape"]
 
+        var homes = {};
+        var intersections = {};
+
     </script>
     <!-- My Scripts -->
     <script src="shapes.js"></script>
-    <script src="home.js"></script>
+    <script src="mapObjects.js"></script>
     <script src="main.js"></script>
   </head>
   <body>

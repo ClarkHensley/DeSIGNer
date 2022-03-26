@@ -45,6 +45,29 @@ class Polygon{
 
 }
 
+class Circle extends Polygon{
+
+    constructor(center, color, border){
+    
+       super(center,color, border); 
+        
+    }
+
+    draw(){
+
+        fill(this.color);
+        stroke(this.border);
+        strokeWeight(shapeBorderWeight);
+
+        circle(this.center.x, this.center.y, 2 * shapeRadius);
+
+        noStroke();
+        noFill();
+
+    }
+
+}
+
 class Triangle extends Polygon{
 
     constructor(center, color, border){
