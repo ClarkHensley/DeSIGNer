@@ -9,19 +9,11 @@ class Home{
             this.color = colorVal;
             this.border = color(0, 0, 0);
 
-            this.shape = {
-                type: "circle"
-            };
-
         } 
         else if (token === "border"){
 
             this.color = color(255, 255, 255);
             this.border = colorVal;
-
-            this.shape = {
-                type: "circle"
-            };
 
         }
 
@@ -40,16 +32,22 @@ class Home{
         else
             newDisplay = new Circle(this.center, this.color, this.border);
 
-        this.shape = {
-            type: token,
-            display: newDisplay
-        }
+        this.shape = newDisplay;
 
     }
 
     draw(){
 
-        this.shape.display.draw();
+        this.shape.draw();
+
+    }
+
+    isEqualTo(other){
+
+        if(this.token === "circle")
+            return (this.color === other.color && this.border === other.border);
+        else
+            return (this.token === other.token);
 
     }
 

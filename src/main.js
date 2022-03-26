@@ -1,5 +1,5 @@
 
-var LEVEL = 10;
+var LEVEL = 7;
 
 var numHomes = LEVEL + 3;
 
@@ -138,29 +138,38 @@ function generateHomes(){
     //let spaceBetweenHomes = (windowHeight - 200) / (numHomes - 1);
     let spaceBetweenHomes = 75;
 
+    let levelHomeTokens = homeTokens;
+
+    levelHomeTokens.sort(() => Math.random() - 0.5);
+
     for(let i = 0; i < numHomes; i++){
 
         let tempHome;
 
         let tempHomeLocation = createVector(100, 100 + Math.floor(i * spaceBetweenHomes));
 
-        let token = homeTokens[Math.floor(Math.random() * homeTokens.length)];
+        let tokenData = levelHomeTokens.pop();
 
-        if(token == "shape"){
-            token = shapes[Math.floor(Math.random() * shapes.length)];
+        let token = tokenData["token"];
+        let value = tokenData["value"];
 
-            tempHome = new Home(tempHomeLocation, token);
+        homes[i] = new Home(tempHomeLocation, token, value);
 
-        }
-        else{
+    }
 
-            let colorVal = colors[Math.floor(Math.random() * colors.length)];
+}
 
-            tempHome = new Home(tempHomeLocation, token, colorVal);
+function generateShapes(){
 
-        }
+    let levelShapeTokens = shapeTokens;
 
-        homes[i] = tempHome;
+    levelShapeTokens.sort(() => Math.random() - 0.5);
+
+    for(let i = 0; i < numHomes * 3; i++){
+
+        shapesData = levelShapeTokens.pop();
+
+        // If shapesData["shape"] === "triangle" ...
 
     }
 
