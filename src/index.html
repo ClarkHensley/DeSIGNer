@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- Position the Canvas correctly -->
+    <!-- <canvas style="text-align: center; border: 0px; margin: 0; padding: 0;"></canvas> -->
+    <!-- Hosted Version of the p5.js library -->
     <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
-    <script src="main.js"></script>
+    <!-- Global Constants across the files -->
+    <script type="text/javascript">
+
+        const windowWidth = 1900;
+        const windowHeight = 1060;
+
+        const shapeRadius = 20;
+        const shapeBorderWeight = 5;
+
+        const colors = ["red", "orange", "yellow", "pink", "lime", "green", "cyan", "blue", "violet", "purple"];
+        //const shapes = ["triangle", "square", "pentagon", "hexagon", "octagon"];
+        const shapes = ["triangle", "square"];
+        const homeTokens = ["color", "border", "shape"]
+
+    </script>
+    <!-- My Scripts -->
     <script src="shapes.js"></script>
+    <script src="home.js"></script>
+    <script src="main.js"></script>
   </head>
   <body>
     <main>

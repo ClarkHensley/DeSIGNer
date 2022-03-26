@@ -1,21 +1,51 @@
 
-let myTri;
+var homes = [];
+
+var LEVEL = 1;
 
 function setup() {
 
-    createCanvas(1000, 1000);
+    createCanvas(windowWidth, windowHeight);
 
-    myTri = new Triangle(createVector(100, 100), 20, color(0, 220, 0), color(20, 20, 20));
+    generateHomes();
 
 }
 
 function draw() {
 
-    background(220,0,0);
+    background(color(127, 127, 127));
 
-    myTri.move();
+    for(let h of homes)
+        h.draw();
+        
 
-    myTri.draw();
+}
+
+function generateHomes(){
+
+    for(let i = 0; i < LEVEL + 2; i++){
+
+        let tempHome;
+
+        let token = homeTokens[Math.floor(Math.random() * homeTokens.length)];
+
+        if(token == "shape"){
+            token = shapes[Math.floor(Math.random() * shapes.length)];
+
+            tempHome = new Home(createVector(100, (100 * (i + 1))), token);
+
+        }
+        else{
+
+            let colorVal = colors[Math.floor(Math.random() * colors.length)];
+
+            tempHome = new Home(createVector(100, (100 * (i + 1))), token, colorVal);
+
+        }
+
+        homes.push(tempHome);
+
+    }
 
 }
 

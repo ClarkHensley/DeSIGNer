@@ -20,3 +20,15 @@ The goal is to filter shapes into the proper channel so that they reach their "H
 
 This is somewhat akin to a tower defense game, but I don't want to add a time limit. What do we do to make the shapes have to interact with the world?
 
+# Update #2:
+
+So, let's suppose N shapes are generated with m qualities. A number of homes are generated, and each shape must move to a home that it matches (So a green square with purple border can move to the green home, the square home, or the purple border home). A number of valid homes are generated, to ensure that each generated shape has at least 1 home.
+
+Then, we'll generate a path, a simple tree structure.
+
+# Update #3:
+
+To cap off day 1 of development, I think it makes sense for this to effectively be a game-implementation of a binary search tree. Each item will traverse the tree by arbitrary boolean implications.
+
+So, the plan going forward: On each level, generate a number of shapes which will try to go home when you release them. Set up If/Else Signs at intersections to funnel them and get them home.
+

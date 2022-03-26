@@ -1,8 +1,8 @@
+
 class Polygon{
 
-    constructor(center, radius, color, border){
+    constructor(center, color, border){
         this.center = center;
-        this.radius = radius;
         this.color = color;
         this.border = border;
 
@@ -47,15 +47,15 @@ class Polygon{
 
 class Triangle extends Polygon{
 
-    constructor(center, radius, color, border){
+    constructor(center, color, border){
 
-        super(center, radius, color, border);
+        super(center, color, border);
 
     }
 
     generatePoints(){
 
-        this.points = [createVector(this.center.x, this.center.y - this.radius), createVector(this.center.x + this.radius, this.center.y + this.radius), createVector(this.center.x - this.radius, this.center.y + this.radius)];
+        this.points = [createVector(this.center.x, this.center.y - shapeRadius), createVector(this.center.x + shapeRadius, this.center.y + shapeRadius), createVector(this.center.x - shapeRadius, this.center.y + shapeRadius)];
 
     }
 
@@ -63,7 +63,7 @@ class Triangle extends Polygon{
 
         fill(this.color);
         stroke(this.border);
-        strokeWeight(5);
+        strokeWeight(shapeBorderWeight);
 
         triangle(this.points[0].x, this.points[0].y, this.points[1].x, this.points[1].y, this.points[2].x, this.points[2].y);
 
@@ -76,15 +76,15 @@ class Triangle extends Polygon{
 
 class Square extends Polygon{
 
-    constructor(center, radius, color, border){
+    constructor(center, color, border){
 
-        super(center, radius, color, border);
+        super(center, color, border);
 
     }
 
     generatePoints(){
 
-        this.points = [createVector(this.center.x - this.radius, this.center.y - this.radius), createVector(this.center.x + this.radius, this.center.y - this.radius), createVector(this.center.x + this.radius, this.center.y + this.radius), createVector(this.center.x - this.radius, this.center.y + this.radius)];
+        this.points = [createVector(this.center.x - shapeRadius, this.center.y - shapeRadius), createVector(this.center.x + shapeRadius, this.center.y - shapeRadius), createVector(this.center.x + shapeRadius, this.center.y + shapeRadius), createVector(this.center.x - shapeRadius, this.center.y + shapeRadius)];
 
     }
 
@@ -92,7 +92,7 @@ class Square extends Polygon{
 
         fill(this.color);
         stroke(this.border);
-        strokeWeight(5);
+        strokeWeight(shapeBorderWeight);
 
         quad(this.points[0].x, this.points[0].y, this.points[1].x, this.points[1].y, this.points[2].x, this.points[2].y, this.points[3].x, this.points[3].y);
 
@@ -106,7 +106,7 @@ class Square extends Polygon{
 
 class Pentagon extends Polygon{
 
-    constructor(center, radius, color, border){
+    constructor(center, color, border){
 
         super(center, radius, color, border);
 
@@ -114,7 +114,7 @@ class Pentagon extends Polygon{
 
     generatePoints(){
 
-        this.points = [createVector(this.center.x - this.radius, this.center.y - this.radius), createVector(this.center.x + this.radius, this.center.y - this.radius), createVector(this.center.x + this.radius, this.center.y + this.radius), createVector(this.center.x - this.radius, this.center.y + this.radius)];
+        this.points = [createVector(this.center.x - shapeRadius, this.center.y - shapeRadius), createVector(this.center.x + shapeRadius, this.center.y - shapeRadius), createVector(this.center.x + shapeRadius, this.center.y + shapeRadius), createVector(this.center.x - shapeRadius, this.center.y + shapeRadius)];
 
     }
 
@@ -123,7 +123,7 @@ class Pentagon extends Polygon{
         fill(this.color);
 
         stroke(this.border);
-        strokeWeight(5);
+        strokeWeight(shapeBorderWeight);
 
         quad(this.points[0].x, this.points[0].y, this.points[1].x, this.points[1].y, this.points[2].x, this.points[2].y, this.points[3].x, this.points[3].y);
 
