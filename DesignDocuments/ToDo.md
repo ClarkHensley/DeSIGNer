@@ -9,8 +9,8 @@ I began working on this on Friday, March 25th.
 
 ## March 25th:
 
-[  ]  Generate N random shapes
-[  ]  Create the binary tree paths
-[  ]  Create signs
-[  ]  Hover text for shapes, homes, signs
+ - Generate N random shapes
+ - Create the binary tree paths
+ - Create signs
+ - Hover text for shapes, homes, signs
 
