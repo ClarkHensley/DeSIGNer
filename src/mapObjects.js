@@ -26,9 +26,15 @@ class Home{
             
         let newDisplay;
         if(token === "triangle")
-            newDisplay = new Triangle(this.center, this.color, this.border)
+            newDisplay = new Triangle(this.center, this.color, this.border);
         else if(token === "square")
-            newDisplay = new Square(this.center, this.color, this.border)
+            newDisplay = new Square(this.center, this.color, this.border);
+        else if(token === "pentagon")
+            newDisplay = new Pentagon(this.center, this.color, this.border);
+        else if(token === "hexagon")
+            newDisplay = new Hexagon(this.center, this.color, this.border);
+        else if(token === "octagon")
+            newDisplay = new Octagon(this.center, this.color, this.border);
         else
             newDisplay = new Circle(this.center, this.color, this.border);
 
@@ -119,7 +125,7 @@ class Intersection{
         if(this.bottomPath !== null)
             this.bottomPath.draw();
 
-        stroke(color(255, 0, 255));
+        stroke(color(0, 0, 0));
         strokeWeight(3 * shapeBorderWeight);
 
         point(this.center.x, this.center.y);

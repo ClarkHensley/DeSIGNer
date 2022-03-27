@@ -38,3 +38,9 @@ The map is effectively a binary tree. It might make sense to balance it in the f
 
 Next step, generate the correct homes based on the types of tokens (Finish the types of tokens!), and then we'll make sure they move as they're supposed to.
 
+# Update #5:
+
+The random generation is mostly working. All types of token are working. I still need to add the movement along the path, the signs, the actual DeSIGNer, the movement waiting track, the win/lose conditions, the start screen, and the instructions.
+
+Idea: Homes should have a max capacity. That will make this much more interesting.
+
