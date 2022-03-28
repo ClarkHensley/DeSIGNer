@@ -1,9 +1,9 @@
 
 var LEVEL = 1;
 
-var numAttributes = LEVEL + 7;
+var numAttributes = LEVEL + 3;
 
-var STARTING_MARGIN = Math.floor(windowWidth / 5);
+var numTreeLevels;
 
 function setup() {
 
@@ -19,35 +19,39 @@ function draw() {
 
     for(let intArr in intersections){
 
-
-        for(let i = 0; i < intersections[intArr].length; i++){
-
-            if(intersections[intArr][i] !== null)
-                intersections[intArr][i].draw();
-
-        }
+        for(let i = 0; i < intersections[intArr].length; i++)
+            intersections[intArr][i].draw();
 
     }
 
-    for(let h in homes){
+    for(let h in homes)
         homes[h].draw();
+
+    for(let p in pieces){
+        pieces[p].display.draw();
+        pieces[p].behave(intersections[numTreeLevels - 1][0]);
     }
 
-    for(let s in memberShapes){
-        memberShapes[s].draw();
+}
+
+function keyPressed(){
+
+    if(keyCode === 32){
+        for(let p in pieces)
+            pieces[p].updateState("settingUp");
     }
 
 }
 
 function generateMap(){
 
-    generateHomes();
+    generatePieces();
 
-    let numTreeLevels = Math.ceil(Math.log2(numAttributes)) + 1;
+    numTreeLevels = Math.ceil(Math.log2(numAttributes)) + 1;
 
     let firstLevelGoal = (numAttributes % 2 == 0) ? numAttributes : numAttributes - 1;
 
-    let xSpaceBetweenNodes = Math.floor((windowWidth - 100 - STARTING_MARGIN) / numTreeLevels);
+    let xSpaceBetweenNodes = Math.floor((windowWidth - padding - (windowWidth -STARTING_MARGIN)) / numTreeLevels);
 
     // Start at 1, as the 0th row is not intersections, but homes
     for(let i = 1; i < numTreeLevels; i++){
@@ -60,9 +64,9 @@ function generateMap(){
 
             for(let j = 0; j < firstLevelGoal; j+=2){
 
-                let newY = (homes[j].center.y + homes[j + 1].center.y) / 2;
+                let newY = Math.floor((homes[j].center.y + homes[j + 1].center.y) / 2);
 
-                let newX = (homes[j].center.x + xSpaceBetweenNodes);
+                let newX = Math.floor((homes[j].center.x + xSpaceBetweenNodes));
 
                 let newCenter = createVector(newX, newY);
 
@@ -137,6 +141,84 @@ function generateMap(){
 
 }
 
+function generatePieces(){
+
+    generateHomes();
+
+    let spaceBetweenPieces = Math.floor((windowHeight - 2 * padding) / ((2 * numAttributes) - 1));
+
+    let levelChosenTokensCopy = levelChosenTokens;
+
+    for(let i = 0; i < levelChosenTokens.length; i++){
+
+        console.log(i);
+
+        let tempShapes = shapes;
+        let tempColors = colors;
+        let tempBorders = colors;
+
+        let choiceTokenData = randomPop(levelChosenTokensCopy);
+
+        levelChosenTokensCopy = choiceTokenData[0];
+
+        let choiceType = choiceTokenData[1]["type"];
+        let choiceToken = choiceTokenData[1]["value"];
+
+        let shapesData;
+
+        if(choiceType === "shape"){
+
+            let shapeColorChoice = randomPop(tempColors);
+            let shapeBorderChoice = randomPop(tempColors);
+
+            shapesData = {"shape": choiceToken, "color": shapeColorChoice[1], "border": shapeBorderChoice[1]};
+
+        }
+        else if(choiceType === "color"){
+
+            let colorBorderChoice = randomPop(tempBorders);
+            tempBorders = colorBorderChoice[0];
+            if(colorBorderChoice[1] === choiceToken){
+
+                let colorSecondChoice = randomPop(tempBorders);
+
+                shapesData = {"shape": randomSelection(tempShapes), "color": choiceToken, "border": colorSecondChoice[1]};
+
+            }
+            else{
+
+                shapesData = {"shape": randomSelection(tempShapes), "color": choiceToken, "border": colorBorderChoice[1]};
+
+            }
+
+        }
+        else if(choiceType == "border"){
+
+            let borderColorChoice = randomPop(tempColors);
+            tempColors = borderColorChoice[0];
+            if(borderColorChoice[1] === choiceToken){
+
+                let borderSecondChoice = randomPop(tempColors);
+
+                shapesData = {"shape": randomSelection(tempShapes), "color": borderSecondChoice[1], "border": choiceToken};
+
+            }
+            else{
+
+                shapesData = {"shape": randomSelection(tempShapes), "color": borderColorChoice[1], "border": choiceToken};
+
+            }
+
+        }
+
+        let newCenter = createVector(windowWidth - padding, padding + (spaceBetweenPieces * i));
+        
+        pieces[i] = new Piece(shapesData["shape"], newCenter, shapesData["color"], shapesData["border"], "waiting");
+
+    }
+
+}
+
 function generateHomes(){
 
     let chosenLevelShapes = [];
@@ -145,74 +227,39 @@ function generateHomes(){
 
     let chosenLevelBorders = [];
 
-    generateShapes(chosenLevelShapes, chosenLevelColors, chosenLevelBorders);
-
-    console.log(chosenLevelShapes);
-    console.log(chosenLevelColors);
-    console.log(chosenLevelBorders);
-
-    let spaceBetweenHomes = 75;
-
-    let homeData = [];
-
-    for(let i = 0; i < chosenLevelShapes.length; i++){
-
-        homeData.push({"token": chosenLevelShapes[i], "value": null});
-
-    }
-
-    for(let i = 0; i < chosenLevelColors.length; i++){
-        
-        homeData.push({"token": "color", "value": chosenLevelColors[i]});
-
-    }
-
-    for(let i = 0; i < chosenLevelBorders.length; i++){
-
-        homeData.push({"token": "border", "value": chosenLevelBorders[i]});
-
-    }
-
-    console.log(homeData);
-
-    for(let i = 0; i < numAttributes; i++){
-
-        let tempData;
-        homeData, tempData = randomPop(homeData);
-
-        let tempHomeLocation = createVector(100, 100 + Math.floor(i * spaceBetweenHomes));
-
-        let token = tempData["token"];
-        let value = tempData["value"];
-
-        console.log(token, value);
-
-        homes[i] = new Home(tempHomeLocation, token, value);
-
-    }
-
-}
-
-function generateShapes(chosenLevelShapes, chosenLevelColors, chosenLevelBorders){
-
     let levelShapes = shapes;
 
     let levelColors = colors;
 
     let levelBorders = colors;
 
-    let choiceShape;
-    levelShapes, choiceShape = randomPop(levelShapes);
-    chosenLevelShapes.push(choiceShape);
+    let choiceShape = randomPop(levelShapes);
+    chosenLevelShapes.push(choiceShape[1]);
+    levelShapes = choiceShape[0];
 
-    let choiceColor;
-    levelColors, choiceColor = randomPop(levelColors);
-    chosenLevelColors.push(choiceColor);
+    let choiceColor = randomPop(levelColors);
+    chosenLevelColors.push(choiceColor[1]);
+    levelColors = choiceColor[0];
 
-    let choiceBorder;
-    levelBorders, choiceBorder = randomPop(levelBorders);
-    chosenLevelBorders.push(choiceBorder);
+    // For the first go, the border and color values must be different. Only an issue on very small maps
+    let choiceBorder = randomPop(levelBorders);
 
+    if(choiceBorder[1] !== chosenLevelColors[0]){
+
+        chosenLevelBorders.push(choiceBorder[1]);
+        levelBorders = choiceBorder[0];
+
+    }
+    else{
+
+        let newChoice = randomPop(choiceBorder[0]);
+
+        chosenLevelBorders.push(newChoice[1]);
+
+        levelBorders = newChoice[0];
+        levelBorders.push(choiceBorder[1]);
+
+    }
 
     for(let i = 3; i < numAttributes; i++){
 
@@ -222,64 +269,70 @@ function generateShapes(chosenLevelShapes, chosenLevelColors, chosenLevelBorders
 
         if(rand > 2 / 3){
 
-            levelShapes, choice = randomPop(levelShapes);
-
-            chosenLevelShapes.push(choice);
+            choice = randomPop(levelShapes);
+            chosenLevelShapes.push(choice[1]);
+            levelShapes = choice[0];
 
         }
         else if(rand > 1 / 3){
 
-            levelColors, choice = randomPop(levelColors);
-
-            chosenLevelColors.push(choice);
+            choice = randomPop(levelColors);
+            chosenLevelColors.push(choice[1]);
+            levelColors = choice[0];
 
         }
         else{
 
-            levelBorders, choice = randomPop(levelBorders);
-
-            chosenLevelBorders.push(choice);
+            choice = randomPop(levelBorders);
+            chosenLevelBorders.push(choice[1]);
+            levelBorders = choice[0];
 
         }
 
     }
 
-    for(let i = 0; i < numAttributes * 2; i++){
+    let spaceBetweenHomes = Math.floor((windowHeight - 2 * padding) / (numAttributes - 1));
 
-        let shapesData = {
-            "shape": randomSelection(chosenLevelShapes),
-            "color": randomSelection(chosenLevelColors),
-            "border": randomSelection(chosenLevelBorders)
-        };
+    let homeData = [];
 
-        let newCenter = createVector(windowWidth - 100, 50 * (i + 1));
+    for(let i = 0; i < chosenLevelShapes.length; i++){
+
+        for(let j = 0; j < homeCapacity; j++)
+            levelChosenTokens.push({"type": "shape", "value": chosenLevelShapes[i]});
+
+        homeData.push({"token": chosenLevelShapes[i], "value": null});
+
+    }
+
+    for(let i = 0; i < chosenLevelColors.length; i++){
         
-        switch(shapesData["shape"]){
+        for(let j = 0; j < homeCapacity; j++)
+            levelChosenTokens.push({"type": "color", "value": chosenLevelColors[i]});
 
-            case "triangle":
-                memberShapes[i] = new Triangle(newCenter,shapesData["color"], shapesData["border"]);
-                break;
+        homeData.push({"token": "color", "value": chosenLevelColors[i]});
 
-            case "square":
-                memberShapes[i] = new Square(newCenter, shapesData["color"], shapesData["border"]);
-                break;
+    }
 
-            case "pentagon":
-                memberShapes[i] = new Pentagon(newCenter, shapesData["color"], shapesData["border"]);
-                break;
+    for(let i = 0; i < chosenLevelBorders.length; i++){
 
-            case "hexagon":
-                memberShapes[i] = new Hexagon(newCenter, shapesData["color"], shapesData["border"]);
-                break;
+        for(let j = 0; j < homeCapacity; j++)
+            levelChosenTokens.push({"type":"border", "value": chosenLevelBorders[i]});
 
-            case "octagon":
-                memberShapes[i] = new Octagon(newCenter, shapesData["color"], shapesData["border"]);
-                break;
+        homeData.push({"token": "border", "value": chosenLevelBorders[i]});
 
-            default:
-                break;
+    }
 
-        }
+    for(let i = 0; i < numAttributes; i++){
+
+        let tempData = randomPop(homeData);
+        homeData = tempData[0];
+
+        let tempHomeLocation = createVector(padding, padding + Math.floor(i * spaceBetweenHomes));
+
+        let token = tempData[1]["token"];
+        let value = tempData[1]["value"];
+
+        homes[i] = new Home(tempHomeLocation, token, value);
 
     }
 
@@ -293,9 +346,7 @@ function randomPop(array){
 
     array = array.slice(0, randIndex).concat(array.slice(randIndex + 1));
 
-    console.log(array);     
-
-    return (array, temp);
+    return [array, temp];
 
 }
 

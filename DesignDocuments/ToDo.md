@@ -19,11 +19,12 @@ I began working on this on Friday, March 25th.
  :white_check_mark: How to ensure that N random shapes have shared characteristics and the homes can be coordinated around them <br>
     :white_check_mark: Oooh! Idea: Only generate each a subset of the characteristics each time. That should work! <br>
 
- - Fix duplicate Homes
- - Add home capacities
+ :white_check_mark: Fix duplicate Homes <br>
+ :white_check_mark: Add home capacities <br>
  - Win/Lose
  - Title Screen
  - Instructions
  - Music
  - Movement
- - Idle Animations
+ :white_check_mark: Idle Animations <br>
+ - DeSIGNer

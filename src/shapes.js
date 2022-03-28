@@ -11,30 +11,9 @@ class Polygon{
         this.generatePoints();
     }
 
-    move(){
+    move(x, y){
 
-        let direction = createVector(0, 0);
-        
-        if(keyIsDown(LEFT_ARROW)){
-
-            direction = createVector(-1, 0);
-
-        }
-        else if(keyIsDown(RIGHT_ARROW)){
-        
-            direction = createVector(1, 0);
-
-        }
-        else if(keyIsDown(UP_ARROW)){
-
-            direction = createVector(0, -1);
-
-        }
-        else if(keyIsDown(DOWN_ARROW)){
-
-            direction = createVector(0, 1);
-
-        }
+        let direction = createVector(x, (-1) * y);
 
         this.center.add(direction);
         this.generatePoints();

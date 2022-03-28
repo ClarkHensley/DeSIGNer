@@ -89,6 +89,8 @@ class Intersection{
         this.topChild = topChild;
         this.bottomChild = bottomChild;
 
+        this.prepared = false;
+
         if(this.topChild instanceof Intersection && this.topChild.bottomChild === null){
 
             let temp = this.topChild.topChild;
@@ -132,6 +134,153 @@ class Intersection{
 
         noStroke();
 
+    }
+
+}
+
+class Piece{
+
+    constructor(type, center, color, border, state){
+
+        this.type = type;
+        this.display = null;
+        this.state = state;
+
+        this.originalCenter = center;
+
+        this.startedRun = false;
+        this.reachedStartingPoint = false;
+
+        this.currentNode = null;
+
+        switch(this.type){
+
+            case "triangle":
+                this.display = new Triangle(center,color, border);
+                break;
+
+            case "square":
+                this.display = new Square(center, color, border);
+                break;
+
+            case "pentagon":
+                this.display = new Pentagon(center, color, border);
+                break;
+
+            case "hexagon":
+                this.display = new Hexagon(center, color, border);
+                break;
+
+            case "octagon":
+                this.display = new Octagon(center, color, border);
+                break;
+
+            default:
+                break;
+
+        }
+
+    }
+
+    updateState(newState){
+
+        this.state = newState;
+
+    }
+
+    move(x, y){
+
+        this.display.move(x, y);    
+
+    }
+
+    behave(startingNode){
+
+        switch(this.state){
+
+            case "waiting":
+                this.rotate();
+                break;
+
+            case "settingUp":
+                if(!this.startedRun){
+
+                    this.rotate();
+
+                    if(this.display.center.x === STARTING_MARGIN + padding && this.display.center.y === startingNode.center.y){
+
+                        this.startedRun = true;
+
+                    }
+
+                }
+                else{
+
+                    if(!this.reachedStartingPoint){
+
+                        this.move(-1, 0);
+
+                        if(this.display.center.equals(startingNode.center)){
+                            this.reachedStartingPoint = true;
+
+                        }
+
+                    }
+                    else{
+
+                        this.currentNode = startingNode;
+                        this.state = "running";
+
+                    }
+
+            }
+
+            break;
+
+            case "running":
+                break;
+
+        }
+    }
+
+    rotate(){
+
+        if(this.display.center.y === padding){
+
+            if(this.display.center.x === STARTING_MARGIN + padding)
+                this.move(0, -1);
+            else
+                this.move(-1, 0);
+
+        }
+
+        else if(this.display.center.y === windowHeight - padding){
+
+            if(this.display.center.x === windowWidth - padding)
+                this.move(0, 1);
+            else
+                this.move(1, 0);
+
+        }
+
+        else if(this.display.center.x === windowWidth - padding){
+
+            if(this.display.center.y === padding)
+                this.move(-1, 0);
+            else
+                this.move(0, 1);
+
+        }
+
+        else if(this.display.center.x === STARTING_MARGIN + padding){
+
+            if(this.display.center.y === windowWidth - padding)
+                this.move(1, 0);
+            else
+                this.move(0, -1);
+
+        }
+                
     }
 
 }

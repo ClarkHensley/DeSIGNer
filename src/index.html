@@ -9,15 +9,22 @@
         const windowWidth = document.documentElement.clientWidth;
         const windowHeight = document.documentElement.clientHeight;
 
+        const STARTING_MARGIN = Math.floor(4 *windowWidth / 5);
+        const padding = 100;
+
         const shapeRadius = 20;
         const shapeBorderWeight = 5;
 
-        const colors = ["red", "pink", "yellow",  "brown", "lime", "green", "cyan", "blue", "violet", "purple"];
+        const homeCapacity = 2;
+
         const shapes = ["triangle", "square", "pentagon", "hexagon", "octagon"];
+        const colors = ["red", "pink", "orange", "brown", "yellow", "gold", "lime", "green", "cyan", "blue", "violet", "purple"];
+
+        var levelChosenTokens = [];
 
         var homes = {};
         var intersections = {};
-        var memberShapes = {};
+        var pieces = {};
 
     </script>
     <!-- My Scripts -->

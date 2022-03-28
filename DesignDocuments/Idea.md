@@ -44,3 +44,7 @@ The random generation is mostly working. All types of token are working. I still
 
 Idea: Homes should have a max capacity. That will make this much more interesting.
 
+# Update #6:
+
+I hit the jackpot. After generating homes, we'll create the Pieces with superfluous other values. This way, there is always at least 1 solution to the level, but this makes it a real puzzle.
+
