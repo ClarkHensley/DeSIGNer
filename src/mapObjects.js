@@ -4,6 +4,8 @@ class Home{
 
         this.center = center;
 
+        this.population = 0;
+
         if(token === "color"){
 
             this.color = colorVal;
@@ -57,6 +59,12 @@ class Home{
 
     }
 
+    isFull(){
+
+        return this.population == homeCapacity;
+
+    }
+
 }
 
 class Path{
@@ -81,6 +89,7 @@ class Path{
 
 }
 
+
 class Intersection{
 
     constructor(center, topChild, bottomChild = null){
@@ -89,7 +98,42 @@ class Intersection{
         this.topChild = topChild;
         this.bottomChild = bottomChild;
 
-        this.prepared = false;
+        this.menuOpen = false;
+        this.proposition = null;
+
+        /*this.button = createButton("");
+        this.button.position(this.center.x, this.center.y - padding);
+        this.button.size(padding, padding);
+        this.button.style("background-color", color(0, 0, 0, 0));
+
+        this.button.mousePressed(this.openDesigner);
+        this.button.hide();*/
+
+        this.menu = createGraphics(200, 100);
+        this.menu.background(color(191, 191, 191));
+
+        /*this.menu.button = createButton("x");
+        this.menu.button.position(this.center.x + 195, this.center.y - 45);
+        this.menu.button.size(5, 5);
+        this.menu.button.mousePressed(this.closeDesigner);
+        this.menu.button.hide();*/
+
+        this.notCheck = createCheckbox("NOT?", false);
+        this.notCheck.hide();
+
+        this.selection = createSelect();
+
+        this.selection.option("");
+
+        console.log(levelAllTokens.length);
+        for(let i = 0; i < levelAllTokens.length; i++){
+
+            console.log(i);
+
+            this.selection.option(levelAllTokens[i]["type"] + ": " + levelAllTokens[i]["value"]);
+
+        }
+        this.selection.hide();
 
         if(this.topChild instanceof Intersection && this.topChild.bottomChild === null){
 
@@ -127,12 +171,87 @@ class Intersection{
         if(this.bottomPath !== null)
             this.bottomPath.draw();
 
-        stroke(color(0, 0, 0));
-        strokeWeight(3 * shapeBorderWeight);
+        stroke(color(0, 0, 0))
+        strokeWeight(2 * shapeBorderWeight);
 
-        point(this.center.x, this.center.y);
+        line(this.center.x, this.center.y, this.center.x, this.center.y - padding);
 
         noStroke();
+
+        if(this.menuOpen){
+
+            //this.button.hide();
+            //this.menu.button.show();
+
+            textSize(32);
+
+            this.menu.text("DeSIGNer", 5, 15);
+            this.menu.text("Pieces Move to the Top Lane if:", 5, 25);
+
+            this.notCheck.position(this.center.x - 92, this.center.y - 40);
+            this.notCheck.show();
+            this.selection.position(this.center.x - 23, this.center.y - 40);
+            this.selection.show();
+
+            this.menu.text("And Move to the", 5, 80);
+            this.menu.text("Bottom Lane otherwise.", 5, 90);
+            image(this.menu, this.center.x - 100, this.center.y - 90);
+
+
+        }
+        else{
+
+            //this.button.show();
+            this.notCheck.hide();
+            this.selection.hide();
+
+        }
+
+        if(this.proposition !== null){
+
+            fill(color(255, 0, 0));
+            stroke(color(0, 0, 0));
+            strokeWeight(shapeBorderWeight);
+
+            triangle(this.center.x, this.center.y - padding, this.center.x + padding, this.center.y -  9 * (padding / 10), this.center.x, this.center.y - 4 * (padding / 5));
+
+            noStroke();
+            noFill();
+
+        }
+
+    }
+
+    update(){
+
+        let proposition = this.selection.value();
+
+        console.log(proposition);
+
+        let not = !this.notCheck.checked();
+
+        if(proposition !== ""){
+
+            let propositionParts = proposition.split(": ");
+
+            this.proposition = {"not": not, "token": propositionParts[0], "value": propositionParts[1]};
+
+        }
+        else
+            this.proposition = null;
+
+    }
+
+    openDesigner(){
+
+        this.menuOpen = true;
+        console.log(this.menuOpen);
+    
+    }
+
+    closeDesigner(){
+
+        this.menuOpen = false;
 
     }
 
@@ -238,6 +357,24 @@ class Piece{
             break;
 
             case "running":
+                this.run();
+                break;
+
+            case "moving":
+                this.moveToNextNode();
+                break;
+
+            case "homing":
+                this.home();
+                break;
+
+            case "failed":
+                break;
+
+            case "finished":
+                break;
+
+            default:
                 break;
 
         }
@@ -283,5 +420,113 @@ class Piece{
                 
     }
 
-}
+    run(){
 
+        let proposition = this.currentNode.proposition;
+
+        console.log(proposition);
+
+        let pass;
+
+        switch(proposition["token"]){
+
+            case "shape":
+
+                pass = (this.shape == proposition["value"]) == proposition["not"];
+                break;
+
+            case "color":
+
+                pass = (this.color == proposition["value"]) == proposition["not"];
+                break;
+
+            case "border":
+
+                pass = (this.border == proposition["value"]) == proposition["not"];
+                break;
+
+        }
+
+        if(pass)
+            this.currentNode = this.currentNode.topChild;        
+        else
+            this.currentNode = this.currentNode.bottomChild;
+        
+        this.state = "moving";
+
+    }
+
+    moveToNextNode(){
+
+        if(this.display.center.x === this.currentNode.center.x && this.display.center.y === this.currentNode.center.y){
+
+            if(this.currentNode instanceof Home)
+                this.state = "homing";
+            else
+                this.state = "running";
+
+        }
+
+        else{
+
+            if(this.display.center.y > this.currentNode.center.y)
+                this.move(-1, -1);
+            else if(this.display.center.y < this.currentNode.center.y)
+                this.move(-1, 1);
+            else
+                this.move(-1, 0);
+
+        }
+
+    }
+
+    home(){
+
+        if(this.currentNode.isFull())
+            this.state = "failed";
+
+        else{
+
+            switch(this.currentNode.token){
+
+                case "color":
+                    if(this.color === this.currentNode.colorVal){
+
+                        this.state = "finished";
+                        this.currentNode.population++;
+
+                    }
+                    else
+                        this.state = "failed";
+                    break;
+
+                case "border":
+                    if(this.border === this.currentNode.colorVal){
+
+                        this.state = "finished";
+                        this.currentNode.population++;
+
+                    }
+                    else
+                        this.state = failed;
+                    break;
+
+                default:
+                    if(this.type === this.currentNode.token){
+
+                        this.state = "finished";
+                        this.currentNode.population++;
+
+                    }
+                    else
+                        this.state = failed;
+                    break;
+
+            }  
+
+        }
+
+
+    }
+
+}

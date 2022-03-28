@@ -9,6 +9,18 @@ function setup() {
 
     createCanvas(windowWidth, windowHeight);
 
+    startButton = createButton("Press This to Send The Shapes!");
+    startButton.size(300, 150);
+    startButton.position(3 * windowWidth / 4 - 300, 3 * windowHeight / 4);
+    startButton.style("background-color", color(0, 191, 0));
+    startButton.mousePressed(startRun);
+
+    retryButton = createButton("TRY AGAIN!");
+    retryButton.size(300, 150);
+    retryButton.position(windowWidth / 2 - 300, 3 * windowHeight / 4 + 150);
+    retryButton.style("background-color", color(255, 0, 0));
+    retryButton.mousePressed(restartRun);
+
     generateMap();
 
 }
@@ -17,29 +29,95 @@ function draw() {
 
     background(color(127, 127, 127));
 
-    for(let intArr in intersections){
+    retryButton.hide();
 
-        for(let i = 0; i < intersections[intArr].length; i++)
-            intersections[intArr][i].draw();
+    if(checkWon()){
+
+        background(color(0, 255, 0));
+
+        textSize(128);
+        text("YOU WIN!", windowWidth / 4, windowHeight / 4);
+
+        startButton.hide();
 
     }
+    else if(checkLost()){
 
-    for(let h in homes)
-        homes[h].draw();
+        background(color(255, 0, 0));
 
-    for(let p in pieces){
-        pieces[p].display.draw();
-        pieces[p].behave(intersections[numTreeLevels - 1][0]);
+        textSize(128);
+        text("YOU LOSE!", windowWidth / 4, windowHeight / 4);
+
+        retryButton.show();
+
+
+    }
+    else{
+
+        startButton.show();
+
+        for(let intArr in intersections){
+
+            for(let i = 0; i < intersections[intArr].length; i++){
+
+                intersections[intArr][i].draw();
+                intersections[intArr][i].update();
+
+            }
+
+        }
+
+        for(let h in homes)
+            homes[h].draw();
+
+        for(let p in pieces){
+            pieces[p].display.draw();
+            pieces[p].behave(intersections[numTreeLevels - 1][0]);
+        }
+
     }
 
 }
 
-function keyPressed(){
+function startRun(){
 
-    if(keyCode === 32){
+    if(checkReady()){
+
         for(let p in pieces)
             pieces[p].updateState("settingUp");
+        
     }
+
+}
+
+function restartRun(){
+
+    for(let p in pieces){
+
+        pieces[p].center = pieces[p].originalCenter;
+        pieces[p].state = "waiting";
+
+    }
+
+}
+
+function mousePressed(){
+
+    for(let intArr in intersections){
+
+        for(let i = 0; i < intersections[intArr].length; i++){
+
+            if(dist(mouseX, mouseY, intersections[intArr][i].center.x, intersections[intArr][i].center.y) <= padding){
+
+                intersections[intArr][i].menuOpen = true;
+
+            }
+            else
+                intersections[intArr][i].menuOpen = false;
+
+        }
+
+    } 
 
 }
 
@@ -145,13 +223,13 @@ function generatePieces(){
 
     generateHomes();
 
+    levelAllTokens = levelChosenTokens.slice();
+
     let spaceBetweenPieces = Math.floor((windowHeight - 2 * padding) / ((2 * numAttributes) - 1));
 
     let levelChosenTokensCopy = levelChosenTokens;
 
     for(let i = 0; i < levelChosenTokens.length; i++){
-
-        console.log(i);
 
         let tempShapes = shapes;
         let tempColors = colors;
@@ -160,6 +238,7 @@ function generatePieces(){
         let choiceTokenData = randomPop(levelChosenTokensCopy);
 
         levelChosenTokensCopy = choiceTokenData[0];
+
 
         let choiceType = choiceTokenData[1]["type"];
         let choiceToken = choiceTokenData[1]["value"];
@@ -170,6 +249,9 @@ function generatePieces(){
 
             let shapeColorChoice = randomPop(tempColors);
             let shapeBorderChoice = randomPop(tempColors);
+
+            levelAllTokens.push({"type": "color", "value": shapeColorChoice[1]});
+            levelAllTokens.push({"type": "border","value": shapeBorderChoice[1]});
 
             shapesData = {"shape": choiceToken, "color": shapeColorChoice[1], "border": shapeBorderChoice[1]};
 
@@ -182,10 +264,14 @@ function generatePieces(){
 
                 let colorSecondChoice = randomPop(tempBorders);
 
+            levelAllTokens.push({"type": "border", "value": colorSecondChoice[1]});
+
                 shapesData = {"shape": randomSelection(tempShapes), "color": choiceToken, "border": colorSecondChoice[1]};
 
             }
             else{
+
+            levelAllTokens.push({"type": "border", "value": colorBorderChoice[1]});
 
                 shapesData = {"shape": randomSelection(tempShapes), "color": choiceToken, "border": colorBorderChoice[1]};
 
@@ -200,10 +286,14 @@ function generatePieces(){
 
                 let borderSecondChoice = randomPop(tempColors);
 
+                levelAllTokens.push({"type":"color", "value": borderSecondChoice[1]});
+
                 shapesData = {"shape": randomSelection(tempShapes), "color": borderSecondChoice[1], "border": choiceToken};
 
             }
             else{
+
+                levelAllTokens.push({"type": "color", "value": borderColorChoice[1]});
 
                 shapesData = {"shape": randomSelection(tempShapes), "color": borderColorChoice[1], "border": choiceToken};
 
@@ -216,6 +306,8 @@ function generatePieces(){
         pieces[i] = new Piece(shapesData["shape"], newCenter, shapesData["color"], shapesData["border"], "waiting");
 
     }
+
+    shuffle(levelAllTokens, true);
 
 }
 
@@ -353,6 +445,48 @@ function randomPop(array){
 function randomSelection(array){
 
     return array[Math.floor(Math.random() * array.length)];
+
+}
+
+function checkWon(){
+
+    for(let h in homes){
+        if(!homes[h].isFull())
+            return false;
+
+    } 
+
+    return true;
+
+}
+
+function checkLost(){
+
+    for(let p in pieces){
+
+        if(pieces[p].state == "failed")
+            return true;
+
+    }
+
+    return false;
+
+}
+
+function checkReady(){
+
+    for(let intArr in intersections){
+
+        for(let i = 0; i < intersections[intArr].length; i++){
+
+            if(intersections[intArr][i].proposition == null)
+                return false;
+
+        }
+
+    }
+
+    return true;
 
 }
 

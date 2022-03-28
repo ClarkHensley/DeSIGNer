@@ -25,6 +25,6 @@ I began working on this on Friday, March 25th.
  - Title Screen
  - Instructions
  - Music
- - Movement
+ - Movement <br>
  :white_check_mark: Idle Animations <br>
  - DeSIGNer
